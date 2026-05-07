@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Award, ShieldCheck, Rocket, Headphones, Code2, Smartphone } from "lucide-react";
+import { ArrowRight, Award, ShieldCheck, Rocket, Headphones, Code2, Smartphone, Users } from "lucide-react";
 import servicesImg from "@/assets/services-browser.png";
 import { PageHero } from "@/components/PageHero";
 import { CtaBanner } from "@/components/CtaBanner";
@@ -43,6 +43,13 @@ const coreServices = [
     title: "Software Testing",
     desc: "We ensure the functionality, performance, and security of your applications through our comprehensive testing services.",
     items: ["Manual Testing", "Automation Testing", "Performance Testing", "Security Testing", "QA Consulting"],
+  },
+  {
+    icon: Users,
+    to: "/services/staffing",
+    title: "Staffing Services",
+    desc: "Extend your internal team with the top 1% of vetted engineering, design, and QA talent — integrated seamlessly into your workflows.",
+    items: ["Staff Augmentation", "Dedicated Teams", "Vetted Engineers", "Flexible Engagement", "Onboarding Support"],
   },
 ];
 
