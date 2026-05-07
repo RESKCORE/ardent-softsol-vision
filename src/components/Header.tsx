@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, Smartphone, Code2, ShieldCheck, Users } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { DropdownNavigation } from "./ui/dropdown-navigation";
 
 const services = [
   { to: "/services/mobile", label: "Mobile Development" },
@@ -10,56 +11,72 @@ const services = [
   { to: "/services/staffing", label: "Staffing Services" },
 ];
 
+const navItems = [
+  {
+    id: 1,
+    label: "Services",
+    subMenus: [
+      {
+        title: "Services",
+        items: [
+          {
+            label: "Mobile Development",
+            description: "Native iOS, Android & cross-platform apps",
+            icon: Smartphone,
+            link: "/services/mobile",
+          },
+          {
+            label: "Full-Stack Development",
+            description: "Scalable web platforms from frontend to cloud",
+            icon: Code2,
+            link: "/services/full-stack",
+          },
+          {
+            label: "Software Testing",
+            description: "End-to-end QA — manual, automation, performance",
+            icon: ShieldCheck,
+            link: "/services/testing",
+          },
+          {
+            label: "Staffing Services",
+            description: "Top 1% engineering talent for your team",
+            icon: Users,
+            link: "/services/staffing",
+          },
+        ],
+      },
+    ],
+  },
+];
+
 export function Header() {
   const [open, setOpen] = useState(false);
-  const [svcOpen, setSvcOpen] = useState(false);
 
   return (
-    <header className="sticky top-4 z-50 mx-auto max-w-6xl px-4">
-      <div className="rounded-full bg-background/60 backdrop-blur-xl border border-border/40 shadow-sm px-5 lg:px-7 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center">
+    <header className="sticky top-4 z-50 w-full px-4">
+      <div className="rounded-full bg-background/60 backdrop-blur-xl border border-border/40 shadow-sm px-5 lg:px-8 h-16 flex items-center justify-between">
+        <Link to="/" className="flex items-center transition-transform hover:scale-105">
           <img src={logo} alt="Ardent Softsol" className="h-7 w-auto" />
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-8 text-sm font-medium">
+        <nav className="hidden lg:flex items-center gap-2 text-sm font-medium">
           <NavLink to="/">Home</NavLink>
-          <div
-            className="relative"
-            onMouseEnter={() => setSvcOpen(true)}
-            onMouseLeave={() => setSvcOpen(false)}
-          >
-            <button className="flex items-center gap-1 hover:text-primary transition">
-              Services <ChevronDown className="size-4" />
-            </button>
-            {svcOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3">
-                <div className="bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-xl p-2 w-64">
-                  {services.map((s) => (
-                    <Link
-                      key={s.to}
-                      to={s.to}
-                      className="block px-4 py-2.5 rounded-xl hover:bg-primary-soft hover:text-primary transition text-sm"
-                    >
-                      {s.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+          <div className="px-2">
+            <DropdownNavigation navItems={navItems} />
           </div>
           <NavLink to="/about">About</NavLink>
           <NavLink to="/career">Career</NavLink>
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Link
             to="/contact"
-            className="hidden sm:inline-flex items-center justify-center bg-primary text-primary-foreground rounded-full px-5 py-2 text-sm font-semibold hover:opacity-90 transition"
+            className="hidden sm:inline-flex items-center justify-center bg-primary text-primary-foreground rounded-full px-6 py-2 text-sm font-semibold hover:opacity-90 transition btn-premium-hover"
           >
             Contact us
           </Link>
           <button
-            className="lg:hidden p-2 rounded-full hover:bg-muted"
+            className="lg:hidden p-2 rounded-full hover:bg-muted transition-colors"
             onClick={() => setOpen(!open)}
             aria-label="Menu"
           >
@@ -96,7 +113,7 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
     <Link
       to={to}
-      className="hover:text-primary transition relative py-1"
+      className="nav-item-hover hover:text-primary transition relative py-1 px-1.5"
       activeProps={{ className: "text-primary font-semibold" }}
       activeOptions={{ exact: to === "/" }}
     >

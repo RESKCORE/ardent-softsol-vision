@@ -1,4 +1,5 @@
-@import "tailwindcss" source(none);
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
 @source "../src";
 @import "tw-animate-css";
 
@@ -151,5 +152,223 @@
     height: 3px;
     background: var(--primary);
     border-radius: 2px;
+  }
+  .content-card {
+    border-radius: 1.5rem;
+    border: 1px solid color-mix(in oklab, var(--brand-ink) 8%, transparent);
+    background: linear-gradient(180deg, color-mix(in oklab, var(--surface) 80%, white 20%), var(--surface));
+  }
+  .accent-list li {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  .accent-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.4rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 999px;
+    background: var(--primary);
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1.is-visible {
+    transition-delay: 0.1s;
+  }
+  .reveal-delay-2.is-visible {
+    transition-delay: 0.2s;
+  }
+  .reveal-delay-3.is-visible {
+    transition-delay: 0.3s;
+  }
+  .reveal-delay-4.is-visible {
+    transition-delay: 0.4s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@layer utilities {
+  /* Premium font families */
+  .font-display-premium {
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  
+  .font-display-light {
+    font-family: "Playfair Display", serif;
+    font-weight: 600;
+  }
+  
+  .font-poppins {
+    font-family: "Poppins", sans-serif;
+  }
+  
+  .font-inter {
+    font-family: "Inter", sans-serif;
+  }
+  
+  /* Text highlight animations */
+  .highlight-gradient {
+    position: relative;
+    background: linear-gradient(
+      90deg,
+      var(--brand-ink) 0%,
+      var(--brand-ink) 35%,
+      var(--primary) 48%,
+      var(--primary) 52%,
+      var(--brand-ink) 65%,
+      var(--brand-ink) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: brush-stroke-cursor 4s ease-in-out infinite;
+  }
+  
+  .highlight-underline {
+    position: relative;
+    background: linear-gradient(180deg, transparent 60%, rgba(45, 212, 191, 0.2) 100%);
+    animation: underline-expand 1.2s ease-out forwards;
+  }
+  
+  /* Text animations */
+  .text-fade-in {
+    animation: text-fade-in 0.8s ease-out forwards;
+  }
+  
+  .text-slide-up {
+    animation: text-slide-up 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  
+  .text-scale-in {
+    animation: text-scale-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  
+  /* Navbar spacing utilities */
+  .nav-spacing {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0.25rem;
+  }
+  
+  .nav-item-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .nav-item-hover:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Button animations */
+  .btn-premium-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-premium-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(45, 212, 191, 0.15);
+  }
+  
+  /* Subtle fade animations */
+  .fade-in-slow {
+    animation: fade-in-slow 1.2s ease-in-out;
+  }
+  
+  .fade-in-delayed {
+    animation: fade-in-slow 1.2s ease-in-out 0.3s both;
+  }
+}
+
+@keyframes highlight-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  50% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes brush-stroke-cursor {
+  0% {
+    background-position: -200% 0;
+  }
+  50% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes underline-expand {
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+@keyframes text-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes text-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes text-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in-slow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

@@ -50,8 +50,6 @@ function isCatastrophicSsrErrorBody(body: string, responseStatus: number): boole
   );
 }
 
-// h3 swallows in-handler throws into a normal 500 Response with body
-// {"unhandled":true,"message":"HTTPError"} — try/catch alone never fires for those.
 async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
   if (response.status < 500) return response;
   const contentType = response.headers.get("content-type") ?? "";
@@ -69,6 +67,13 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const url = new URL(request.url);
+
+      // Handle resume upload API: POST /api/send-resume
+      if (url.pathname === "/api/send-resume" && request.method === "POST") {
+        return await handleSendResume(request, env);
+      }
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
@@ -78,3 +83,95 @@ export default {
     }
   },
 };
+
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
+}
+
+async function handleSendResume(request: Request, env: unknown): Promise<Response> {
+  try {
+    const formData = await request.formData();
+    const name = String(formData.get("name") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    const message = String(formData.get("message") ?? "").trim();
+    const jobTitle = String(formData.get("jobTitle") ?? "General Application").trim();
+    const resume = formData.get("resume") as File | null;
+
+    if (!resume || resume.size === 0) {
+      return json({ error: "No resume uploaded" }, 400);
+    }
+
+    // Read env — works on both Node (process.env) and Cloudflare Workers (env binding)
+    const envRecord = env as Record<string, string | undefined>;
+    const apiKey =
+      envRecord?.SENDINBLUE_API_KEY ??
+      (typeof process !== "undefined" ? process.env.SENDINBLUE_API_KEY : undefined);
+    const senderEmail =
+      envRecord?.SENDINBLUE_SENDER_EMAIL ??
+      (typeof process !== "undefined" ? process.env.SENDINBLUE_SENDER_EMAIL : undefined) ??
+      "info@ardentsoftsol.com";
+
+    if (!apiKey) {
+      return json({ error: "Sendinblue API key not configured" }, 500);
+    }
+
+    // Convert file to base64 for the attachment
+    const arrayBuffer = await resume.arrayBuffer();
+    const uint8 = new Uint8Array(arrayBuffer);
+    let binary = "";
+    for (let i = 0; i < uint8.length; i++) {
+      binary += String.fromCharCode(uint8[i]);
+    }
+    const base64Content = btoa(binary);
+
+    const bodyText = [
+      `New resume submission from the Ardent Softsol website.`,
+      ``,
+      `Position Applied: ${jobTitle}`,
+      `Name: ${name || "Not provided"}`,
+      `Email: ${email || "Not provided"}`,
+      message ? `Message: ${message}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const payload = {
+      sender: { name: "Ardent Softsol Website", email: senderEmail },
+      to: [{ email: "santoshkumarreddy.ai@gmail.com", name: "Ardent Softsol" }],
+      replyTo: email ? { email, name: name || undefined } : undefined,
+      subject: `Resume Application: ${jobTitle}${name ? ` — ${name}` : ""}`,
+      textContent: bodyText,
+      attachment: [
+        {
+          content: base64Content,
+          name: resume.name || "resume.pdf",
+        },
+      ],
+    };
+
+    const resp = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": apiKey,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!resp.ok) {
+      const text = await resp.text();
+      console.error("Sendinblue/Brevo error", resp.status, text);
+      return json({ error: "Failed to send email. Please try again later." }, 502);
+    }
+
+    return json({ ok: true });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("handleSendResume error:", message);
+    return json({ error: message }, 500);
+  }
+}
