@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareerRouteImport } from './routes/career'
 import { Route as AboutRouteImport } from './routes/about'
@@ -19,6 +20,11 @@ import { Route as ServicesStaffingRouteImport } from './routes/services.staffing
 import { Route as ServicesMobileRouteImport } from './routes/services.mobile'
 import { Route as ServicesFullStackRouteImport } from './routes/services.full-stack'
 
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -40,9 +46,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
-  id: '/services/',
-  path: '/services/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => ServicesRoute,
 } as any)
 const ServicesTestingRoute = ServicesTestingRouteImport.update({
   id: '/testing',
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
+  '/services': typeof ServicesRouteWithChildren
   '/services/full-stack': typeof ServicesFullStackRoute
   '/services/mobile': typeof ServicesMobileRoute
   '/services/staffing': typeof ServicesStaffingRoute
@@ -93,6 +100,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
+  '/services': typeof ServicesRouteWithChildren
   '/services/full-stack': typeof ServicesFullStackRoute
   '/services/mobile': typeof ServicesMobileRoute
   '/services/staffing': typeof ServicesStaffingRoute
@@ -106,6 +114,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/career'
     | '/contact'
+    | '/services'
     | '/services/full-stack'
     | '/services/mobile'
     | '/services/staffing'
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/career'
     | '/contact'
+    | '/services'
     | '/services/full-stack'
     | '/services/mobile'
     | '/services/staffing'
@@ -140,11 +150,18 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CareerRoute: typeof CareerRoute
   ContactRoute: typeof ContactRoute
-  ServicesIndexRoute: typeof ServicesIndexRoute
+  ServicesRoute: typeof ServicesRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -175,10 +192,10 @@ declare module '@tanstack/react-router' {
     }
     '/services/': {
       id: '/services/'
-      path: '/services'
+      path: '/'
       fullPath: '/services/'
       preLoaderRoute: typeof ServicesIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ServicesRoute
     }
     '/services/testing': {
       id: '/services/testing'
@@ -211,12 +228,32 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ServicesRouteChildren {
+  ServicesFullStackRoute: typeof ServicesFullStackRoute
+  ServicesMobileRoute: typeof ServicesMobileRoute
+  ServicesStaffingRoute: typeof ServicesStaffingRoute
+  ServicesTestingRoute: typeof ServicesTestingRoute
+  ServicesIndexRoute: typeof ServicesIndexRoute
+}
+
+const ServicesRouteChildren: ServicesRouteChildren = {
+  ServicesFullStackRoute: ServicesFullStackRoute,
+  ServicesMobileRoute: ServicesMobileRoute,
+  ServicesStaffingRoute: ServicesStaffingRoute,
+  ServicesTestingRoute: ServicesTestingRoute,
+  ServicesIndexRoute: ServicesIndexRoute,
+}
+
+const ServicesRouteWithChildren = ServicesRoute._addFileChildren(
+  ServicesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   CareerRoute: CareerRoute,
   ContactRoute: ContactRoute,
-  ServicesIndexRoute: ServicesIndexRoute,
+  ServicesRoute: ServicesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
