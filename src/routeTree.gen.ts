@@ -9,21 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareerRouteImport } from './routes/career'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesTestingRouteImport } from './routes/services.testing'
 import { Route as ServicesStaffingRouteImport } from './routes/services.staffing'
 import { Route as ServicesMobileRouteImport } from './routes/services.mobile'
 import { Route as ServicesFullStackRouteImport } from './routes/services.full-stack'
 
-const ServicesRoute = ServicesRouteImport.update({
-  id: '/services',
-  path: '/services',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -42,6 +37,11 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/services/',
+  path: '/services/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesTestingRoute = ServicesTestingRouteImport.update({
@@ -70,22 +70,22 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
-  '/services': typeof ServicesRouteWithChildren
   '/services/full-stack': typeof ServicesFullStackRoute
   '/services/mobile': typeof ServicesMobileRoute
   '/services/staffing': typeof ServicesStaffingRoute
   '/services/testing': typeof ServicesTestingRoute
+  '/services/': typeof ServicesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
-  '/services': typeof ServicesRouteWithChildren
   '/services/full-stack': typeof ServicesFullStackRoute
   '/services/mobile': typeof ServicesMobileRoute
   '/services/staffing': typeof ServicesStaffingRoute
   '/services/testing': typeof ServicesTestingRoute
+  '/services': typeof ServicesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,11 +93,11 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
-  '/services': typeof ServicesRouteWithChildren
   '/services/full-stack': typeof ServicesFullStackRoute
   '/services/mobile': typeof ServicesMobileRoute
   '/services/staffing': typeof ServicesStaffingRoute
   '/services/testing': typeof ServicesTestingRoute
+  '/services/': typeof ServicesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -106,33 +106,33 @@ export interface FileRouteTypes {
     | '/about'
     | '/career'
     | '/contact'
-    | '/services'
     | '/services/full-stack'
     | '/services/mobile'
     | '/services/staffing'
     | '/services/testing'
+    | '/services/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/career'
     | '/contact'
-    | '/services'
     | '/services/full-stack'
     | '/services/mobile'
     | '/services/staffing'
     | '/services/testing'
+    | '/services'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/career'
     | '/contact'
-    | '/services'
     | '/services/full-stack'
     | '/services/mobile'
     | '/services/staffing'
     | '/services/testing'
+    | '/services/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -140,18 +140,11 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CareerRoute: typeof CareerRoute
   ContactRoute: typeof ContactRoute
-  ServicesRoute: typeof ServicesRouteWithChildren
+  ServicesIndexRoute: typeof ServicesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/services': {
-      id: '/services'
-      path: '/services'
-      fullPath: '/services'
-      preLoaderRoute: typeof ServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -178,6 +171,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/': {
+      id: '/services/'
+      path: '/services'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/testing': {
@@ -211,31 +211,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface ServicesRouteChildren {
-  ServicesFullStackRoute: typeof ServicesFullStackRoute
-  ServicesMobileRoute: typeof ServicesMobileRoute
-  ServicesStaffingRoute: typeof ServicesStaffingRoute
-  ServicesTestingRoute: typeof ServicesTestingRoute
-}
-
-const ServicesRouteChildren: ServicesRouteChildren = {
-  ServicesFullStackRoute: ServicesFullStackRoute,
-  ServicesMobileRoute: ServicesMobileRoute,
-  ServicesStaffingRoute: ServicesStaffingRoute,
-  ServicesTestingRoute: ServicesTestingRoute,
-}
-
-const ServicesRouteWithChildren = ServicesRoute._addFileChildren(
-  ServicesRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   CareerRoute: CareerRoute,
   ContactRoute: ContactRoute,
-  ServicesRoute: ServicesRouteWithChildren,
+  ServicesIndexRoute: ServicesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
