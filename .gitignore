@@ -20,6 +20,9 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Lovable (scaffolding tool — not needed in production)
+.lovable/
+
 # Local env files — never commit these
 .env
 .env.local
