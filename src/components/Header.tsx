@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const services = [
   { to: "/services/mobile", label: "Mobile Development" },
@@ -14,14 +15,13 @@ export function Header() {
   const [svcOpen, setSvcOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-background/80 border-b border-border/60">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 h-20 flex items-center justify-between">
-        <Link to="/" className="flex flex-col leading-none">
-          <span className="text-2xl font-extrabold text-primary tracking-tight">ardent</span>
-          <span className="text-[11px] font-semibold text-primary/70 tracking-[0.3em] -mt-0.5">softsol</span>
+    <header className="sticky top-4 z-50 mx-auto max-w-6xl px-4">
+      <div className="rounded-full bg-background/60 backdrop-blur-xl border border-border/40 shadow-sm px-5 lg:px-7 h-16 flex items-center justify-between">
+        <Link to="/" className="flex items-center">
+          <img src={logo} alt="Ardent Softsol" className="h-7 w-auto" />
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-10 text-sm font-medium">
+        <nav className="hidden lg:flex items-center gap-8 text-sm font-medium">
           <NavLink to="/">Home</NavLink>
           <div
             className="relative"
@@ -33,7 +33,7 @@ export function Header() {
             </button>
             {svcOpen && (
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3">
-                <div className="bg-card border border-border rounded-2xl shadow-xl p-2 w-64">
+                <div className="bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-xl p-2 w-64">
                   {services.map((s) => (
                     <Link
                       key={s.to}
@@ -51,15 +51,15 @@ export function Header() {
           <NavLink to="/career">Career</NavLink>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Link
             to="/contact"
-            className="hidden sm:inline-flex items-center justify-center bg-primary text-primary-foreground rounded-full px-6 py-2.5 text-sm font-semibold hover:opacity-90 transition shadow-sm"
+            className="hidden sm:inline-flex items-center justify-center bg-primary text-primary-foreground rounded-full px-5 py-2 text-sm font-semibold hover:opacity-90 transition"
           >
             Contact us
           </Link>
           <button
-            className="lg:hidden p-2 rounded-lg hover:bg-muted"
+            className="lg:hidden p-2 rounded-full hover:bg-muted"
             onClick={() => setOpen(!open)}
             aria-label="Menu"
           >
@@ -69,7 +69,7 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="lg:hidden border-t border-border bg-background">
+        <div className="lg:hidden mt-2 rounded-3xl bg-background/95 backdrop-blur-xl border border-border/50 shadow-lg">
           <div className="px-6 py-4 flex flex-col gap-1">
             <MobileLink to="/" onClick={() => setOpen(false)}>Home</MobileLink>
             <details className="group">
