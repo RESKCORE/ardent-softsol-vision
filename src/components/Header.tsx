@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X, ChevronDown, Smartphone, Code2, ShieldCheck, Users } from "lucide-react";
-import logo from "@/assets/logo.png";
 import { DropdownNavigation } from "./ui/dropdown-navigation";
 
 const services = [
@@ -53,30 +52,22 @@ export function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-4 z-50 w-full px-4">
-      <div className="rounded-full bg-background/60 backdrop-blur-xl border border-border/40 shadow-sm px-5 lg:px-8 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center transition-transform hover:scale-105">
-          <img src={logo} alt="Ardent Softsol" className="h-7 w-auto" />
-        </Link>
-
-        <nav className="hidden lg:flex items-center gap-2 text-sm font-medium">
+    <header className="sticky top-0 z-50 w-full px-4 pt-4">
+      <div className="flex items-center justify-center">
+        <nav className="hidden lg:flex items-center gap-1 text-sm font-medium bg-background/70 backdrop-blur-xl border border-border/30 rounded-full px-4 py-2 shadow-sm">
           <NavLink to="/">Home</NavLink>
-          <div className="px-2">
+          <div className="px-1">
             <DropdownNavigation navItems={navItems} />
           </div>
           <NavLink to="/about">About</NavLink>
           <NavLink to="/career">Career</NavLink>
+          <NavLink to="/contact">Contact</NavLink>
         </nav>
 
-        <div className="flex items-center gap-3">
-          <Link
-            to="/contact"
-            className="hidden sm:inline-flex items-center justify-center bg-primary text-primary-foreground rounded-full px-6 py-2 text-sm font-semibold hover:opacity-90 transition btn-premium-hover"
-          >
-            Contact us
-          </Link>
+        {/* Mobile: just a hamburger button, no pill */}
+        <div className="lg:hidden w-full flex justify-end">
           <button
-            className="lg:hidden p-2 rounded-full hover:bg-muted transition-colors"
+            className="p-2 rounded-full bg-background/70 backdrop-blur-xl border border-border/30 shadow-sm hover:bg-muted transition-colors"
             onClick={() => setOpen(!open)}
             aria-label="Menu"
           >
