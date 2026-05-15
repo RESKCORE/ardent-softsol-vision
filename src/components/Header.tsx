@@ -54,22 +54,39 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full px-6 pt-5">
-      <div className="flex items-center justify-between">
+      <style>{`
+        @media (max-width: 1023px) {
+          .desktop-nav { display: none !important; }
+          .desktop-contact { display: none !important; }
+        }
+        @media (min-width: 1024px) {
+          .desktop-nav { display: flex !important; }
+          .desktop-contact { display: inline-block !important; }
+        }
+      `}</style>
+      <div className="flex items-center justify-between gap-8">
         {/* Logo */}
-        <Link to="/" className="flex items-center transition-transform hover:scale-105">
+        <Link to="/" className="flex items-center transition-transform hover:scale-105 flex-shrink-0">
           <img src={logo} alt="Ardent Softsol" className="h-7 w-auto" />
         </Link>
 
-        {/* Desktop nav — transparent, links only */}
-        <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
+        {/* Desktop nav — centered, links only */}
+        <nav className="desktop-nav flex items-center gap-6 text-sm font-medium flex-1 justify-center">
           <NavLink to="/">Home</NavLink>
           <div className="px-1">
             <DropdownNavigation navItems={navItems} />
           </div>
           <NavLink to="/about">About</NavLink>
           <NavLink to="/career">Career</NavLink>
-          <NavLink to="/contact">Contact</NavLink>
         </nav>
+
+        {/* Desktop Contact button */}
+        <Link
+          to="/contact"
+          className="desktop-contact bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors flex-shrink-0"
+        >
+          Contact
+        </Link>
 
         {/* Mobile hamburger */}
         <button
