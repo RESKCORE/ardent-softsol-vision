@@ -53,7 +53,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full px-6 pt-5">
+    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-border/30">
       <style>{`
         @media (max-width: 1023px) {
           .desktop-nav { display: none !important; }
@@ -64,42 +64,51 @@ export function Header() {
           .desktop-contact { display: inline-block !important; }
         }
       `}</style>
-      <div className="flex items-center justify-between gap-8">
-        {/* Logo */}
-        <Link to="/" className="flex items-center transition-transform hover:scale-105 flex-shrink-0">
-          <img src={logo} alt="Ardent Softsol" className="h-7 w-auto" />
-        </Link>
+      <div className="relative">
+        {/* absolute left logo */}
+        <div className="absolute left-6 top-1/2 -translate-y-1/2 z-20">
+          <Link to="/" className="flex items-center transition-transform hover:scale-105">
+            <img src={logo} alt="Ardent Softsol" className="h-9 w-auto" />
+          </Link>
+        </div>
 
-        {/* Desktop nav — centered, links only */}
-        <nav className="desktop-nav flex items-center gap-6 text-sm font-medium flex-1 justify-center">
-          <NavLink to="/">Home</NavLink>
-          <div className="px-1">
-            <DropdownNavigation navItems={navItems} />
+        {/* absolute right contact (desktop only) */}
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 z-20">
+          <Link
+            to="/contact"
+            className="desktop-contact inline-flex items-center justify-center bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+            style={{ minHeight: 40 }}
+          >
+            Contact
+          </Link>
+        </div>
+
+        {/* centered nav container */}
+        <div className="mx-auto max-w-[1200px] w-full flex items-center justify-center px-6 py-3">
+          <nav className="desktop-nav flex items-center gap-8 text-sm font-medium justify-center">
+            <NavLink to="/">Home</NavLink>
+            <div className="px-1">
+              <DropdownNavigation navItems={navItems} />
+            </div>
+            <NavLink to="/about">About</NavLink>
+            <NavLink to="/career">Career</NavLink>
+          </nav>
+
+          {/* Mobile hamburger placed on the right inside the centered container for small screens */}
+          <div className="lg:hidden absolute right-4 top-1/2 -translate-y-1/2 z-30">
+            <button
+              className="p-2 rounded-full hover:bg-muted transition-colors"
+              onClick={() => setOpen(!open)}
+              aria-label="Menu"
+            >
+              {open ? <X className="size-5" /> : <Menu className="size-5" />}
+            </button>
           </div>
-          <NavLink to="/about">About</NavLink>
-          <NavLink to="/career">Career</NavLink>
-        </nav>
-
-        {/* Desktop Contact button */}
-        <Link
-          to="/contact"
-          className="desktop-contact bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors flex-shrink-0"
-        >
-          Contact
-        </Link>
-
-        {/* Mobile hamburger */}
-        <button
-          className="lg:hidden p-2 rounded-full hover:bg-muted transition-colors"
-          onClick={() => setOpen(!open)}
-          aria-label="Menu"
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+        </div>
       </div>
 
       {open && (
-        <div className="lg:hidden mt-3 rounded-3xl bg-background/95 backdrop-blur-xl border border-border/50 shadow-lg">
+      <div className="lg:hidden mt-3 rounded-3xl bg-white/95 backdrop-blur-xl border border-border/50">
           <div className="px-6 py-4 flex flex-col gap-1">
             <MobileLink to="/" onClick={() => setOpen(false)}>Home</MobileLink>
             <details className="group">

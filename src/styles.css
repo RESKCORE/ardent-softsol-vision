@@ -3,6 +3,11 @@
 @source "../src";
 @import "tw-animate-css";
 
+/* Reserve space for the native scrollbar so it doesn't overlap content when scrolling */
+html, body {
+  scrollbar-gutter: stable both-edges;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
