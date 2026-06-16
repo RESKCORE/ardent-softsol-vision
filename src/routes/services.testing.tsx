@@ -7,7 +7,11 @@ export const Route = createFileRoute("/services/testing")({
     meta: [
       { title: "Software Testing — Ardent Softsol" },
       { name: "description", content: "Manual, automation, performance, mobile, web, and API testing services to ensure software reliability." },
+      { name: "keywords", content: "software testing, QA testing, automation testing, performance testing, manual testing, API testing, Cypress, Playwright, Selenium" },
       { property: "og:title", content: "Software Testing & QA" },
+      { property: "og:description", content: "Comprehensive software testing services by Ardent Softsol — manual, automation, performance, and API testing." },
+      { property: "og:url", content: "/services/testing" },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: () => (

@@ -9,7 +9,11 @@ export const Route = createFileRoute("/services/")({
     meta: [
       { title: "Services — Ardent Softsol" },
       { name: "description", content: "End-to-end software services: mobile apps, full-stack web, software testing, and staff augmentation tailored to your business goals." },
+      { name: "keywords", content: "software development services, mobile app development, full-stack development, software testing services, IT staff augmentation, custom software solutions Canada" },
       { property: "og:title", content: "Solutions That Drive Your Business Forward" },
+      { property: "og:description", content: "Explore Ardent Softsol's full range of software services: mobile, full-stack, QA testing, and staff augmentation." },
+      { property: "og:url", content: "/services" },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: Services,

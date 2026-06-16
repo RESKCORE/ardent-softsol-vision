@@ -9,7 +9,11 @@ export const Route = createFileRoute("/contact")({
     meta: [
       { title: "Contact — Ardent Softsol" },
       { name: "description", content: "Reach Ardent Softsol in Surrey, BC. Call +1 (604) 401-2800 or email info@ardentsoftsol.com to start your project." },
+      { name: "keywords", content: "contact Ardent Softsol, software development company Surrey BC, custom software quote, IT consulting contact" },
       { property: "og:title", content: "Let's Build Something Great Together" },
+      { property: "og:description", content: "Have a project in mind? Contact Ardent Softsol for expert software development and consulting services." },
+      { property: "og:url", content: "/contact" },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: Contact,

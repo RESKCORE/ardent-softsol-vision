@@ -7,7 +7,11 @@ export const Route = createFileRoute("/services/full-stack")({
     meta: [
       { title: "Full-Stack Development — Ardent Softsol" },
       { name: "description", content: "End-to-end web application development covering frontend, backend, database, and DevOps." },
+      { name: "keywords", content: "full-stack development, web application development, React development, Node.js, frontend backend, cloud development, DevOps" },
       { property: "og:title", content: "Full-Stack Development Services" },
+      { property: "og:description", content: "End-to-end full-stack web development services by Ardent Softsol — frontend, backend, database, and cloud." },
+      { property: "og:url", content: "/services/full-stack" },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: () => (

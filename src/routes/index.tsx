@@ -8,7 +8,11 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Ardent Softsol — Crafting Innovative Tailored Software Solutions" },
       { name: "description", content: "Surrey, BC software development & consulting firm. Custom mobile, full-stack, QA testing and staff augmentation services that scale your business." },
+      { name: "keywords", content: "software development Surrey BC, custom software solutions, mobile app development, full-stack development, software testing, staff augmentation, IT consulting Canada" },
       { property: "og:title", content: "Ardent Softsol — Tailored Software Solutions" },
+      { property: "og:description", content: "From concept to execution, we engineer custom software that delivers efficiency, agility and unmatched performance." },
+      { property: "og:url", content: "/" },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: Home,

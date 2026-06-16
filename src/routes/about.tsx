@@ -9,8 +9,11 @@ export const Route = createFileRoute("/about")({
     meta: [
       { title: "About — Ardent Softsol" },
       { name: "description", content: "Learn how Ardent Softsol partners with businesses to build scalable, secure, and innovative digital products from our Surrey, BC headquarters." },
+      { name: "keywords", content: "about Ardent Softsol, software company Surrey BC, custom software development firm, software consulting Canada" },
       { property: "og:title", content: "About Ardent Softsol" },
       { property: "og:description", content: "We innovate code solutions — a client-first software firm building technology that drives real business impact." },
+      { property: "og:url", content: "/about" },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: About,

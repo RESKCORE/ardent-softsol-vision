@@ -7,7 +7,11 @@ export const Route = createFileRoute("/services/staffing")({
     meta: [
       { title: "Staffing Services — Ardent Softsol" },
       { name: "description", content: "Staff augmentation that extends your internal team with the top 1% of vetted engineering talent." },
+      { name: "keywords", content: "IT staffing, staff augmentation, software engineer staffing, tech talent recruitment, dedicated development team, contract developers" },
       { property: "og:title", content: "Staffing & Staff Augmentation" },
+      { property: "og:description", content: "Extend your team with top 1% vetted engineering talent through Ardent Softsol's staff augmentation services." },
+      { property: "og:url", content: "/services/staffing" },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: () => (

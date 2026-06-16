@@ -7,7 +7,11 @@ export const Route = createFileRoute("/services/mobile")({
     meta: [
       { title: "Mobile Development — Ardent Softsol" },
       { name: "description", content: "Native Android, iOS, and cross-platform mobile development using Kotlin, Swift, React Native, Flutter and more." },
+      { name: "keywords", content: "mobile app development, Android development, iOS development, cross-platform apps, React Native, Flutter, Kotlin, Swift" },
       { property: "og:title", content: "Mobile Development Services" },
+      { property: "og:description", content: "Native Android, iOS, and cross-platform mobile development services by Ardent Softsol. Build apps users love." },
+      { property: "og:url", content: "/services/mobile" },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: Mobile,

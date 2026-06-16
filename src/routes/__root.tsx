@@ -44,11 +44,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Ardent Softsol — Crafting Innovative Tailored Software Solutions" },
-      { name: "description", content: "Ardent Softsol is a Surrey, BC based software development and consulting firm delivering scalable mobile, full-stack, QA, and staffing solutions." },
-      { property: "og:title", content: "Ardent Softsol — Tailored Software Solutions" },
-      { property: "og:description", content: "From concept to execution, we engineer custom software that delivers efficiency, agility and unmatched performance." },
-      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Ardent Softsol" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

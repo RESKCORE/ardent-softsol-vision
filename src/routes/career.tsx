@@ -9,7 +9,11 @@ export const Route = createFileRoute("/career")({
     meta: [
       { title: "Career — Ardent Softsol" },
       { name: "description", content: "Join Ardent Softsol and shape the future. Browse open roles in development, mobile, QA, and DevOps from our Surrey, BC office." },
+      { name: "keywords", content: "software developer jobs Surrey BC, full stack developer career, mobile app developer jobs, QA engineer jobs, DevOps engineer careers, tech jobs Canada" },
       { property: "og:title", content: "Build Your Career at Ardent Softsol" },
+      { property: "og:description", content: "Join Ardent Softsol and be part of a team that values innovation, collaboration, and growth. Browse open roles today." },
+      { property: "og:url", content: "/career" },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: Career,
