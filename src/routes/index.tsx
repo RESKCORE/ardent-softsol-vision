@@ -7,8 +7,8 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Ardent Softsol — Crafting Innovative Tailored Software Solutions" },
-      { name: "description", content: "Surrey, BC software development & consulting firm. Custom mobile, full-stack, QA testing and staff augmentation services that scale your business." },
-      { name: "keywords", content: "software development Surrey BC, custom software solutions, mobile app development, full-stack development, software testing, staff augmentation, IT consulting Canada" },
+      { name: "description", content: "Vancouver, BC software development & consulting firm. Custom mobile, full-stack, QA testing and staff augmentation services that scale your business." },
+      { name: "keywords", content: "software development Vancouver BC, custom software solutions, mobile app development, full-stack development, software testing, staff augmentation, IT consulting Canada" },
       { property: "og:title", content: "Ardent Softsol — Tailored Software Solutions" },
       { property: "og:description", content: "From concept to execution, we engineer custom software that delivers efficiency, agility and unmatched performance." },
       { property: "og:url", content: "/" },
@@ -126,16 +126,18 @@ function Home() {
       </section>
 
       {/* Clients */}
-      <section className="panel p-8 md:p-12 reveal">
+      <section className="panel p-8 md:p-12 overflow-hidden reveal">
         <p className="text-center text-xs font-semibold tracking-[0.2em] text-muted-foreground uppercase">
           Trusted by businesses worldwide
         </p>
-        <div className="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center">
-          {clients.map((c) => (
-            <div key={c} className="text-center text-xl font-bold text-brand-ink/70 hover:text-primary transition">
-              {c}
-            </div>
-          ))}
+        <div className="marquee-wrapper mt-8">
+          <div className="marquee-track items-center py-4">
+            {[...clients, ...clients].map((c, i) => (
+              <div key={`${c}-${i}`} className="shrink-0 text-center text-xl font-bold text-brand-ink/70 hover:text-primary transition select-none">
+                {c}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -279,7 +281,7 @@ function Home() {
         </div>
         <ContactStripItem icon={<Phone className="size-5" />} label="Call Us" value="+1 (604) 401-2800" />
         <ContactStripItem icon={<Mail className="size-5" />} label="Email Us" value="info@ardentsoftsol.com" />
-        <ContactStripItem icon={<MapPin className="size-5" />} label="Our Location" value="15464 96 Ave, Surrey, BC" />
+        <ContactStripItem icon={<MapPin className="size-5" />} label="Our Location" value="3665 Kingsway, unit 300, Vancouver, BC" />
       </section>
 
       <section className="panel p-10 md:p-12 reveal">

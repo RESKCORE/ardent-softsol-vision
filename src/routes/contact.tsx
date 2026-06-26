@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Clock, Users, ShieldCheck, Phone, Mail, MapPin, Calendar, ChevronDown, ArrowRight } from "lucide-react";
+import { Clock, Users, ShieldCheck, Phone, Mail, MapPin, Calendar, ChevronDown, ArrowRight, Send as SendIcon } from "lucide-react";
 import contactImg from "@/assets/contact-envelope.png";
 import { PageHero } from "@/components/PageHero";
 
@@ -8,8 +8,8 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Contact — Ardent Softsol" },
-      { name: "description", content: "Reach Ardent Softsol in Surrey, BC. Call +1 (604) 401-2800 or email info@ardentsoftsol.com to start your project." },
-      { name: "keywords", content: "contact Ardent Softsol, software development company Surrey BC, custom software quote, IT consulting contact" },
+      { name: "description", content: "Reach Ardent Softsol in Vancouver, BC. Call +1 (604) 401-2800 or email info@ardentsoftsol.com to start your project." },
+      { name: "keywords", content: "contact Ardent Softsol, software development company Vancouver BC, custom software quote, IT consulting contact" },
       { property: "og:title", content: "Let's Build Something Great Together" },
       { property: "og:description", content: "Have a project in mind? Contact Ardent Softsol for expert software development and consulting services." },
       { property: "og:url", content: "/contact" },
@@ -29,6 +29,43 @@ const faqs = [
 function Contact() {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setSending(true);
+
+    const fd = new FormData(e.currentTarget);
+    const payload = {
+      firstName: String(fd.get("first-name") ?? "").trim(),
+      lastName: String(fd.get("last-name") ?? "").trim(),
+      email: String(fd.get("email-address") ?? "").trim(),
+      phone: String(fd.get("phone-number") ?? "").trim(),
+      company: String(fd.get("company-name") ?? "").trim(),
+      subject: String(fd.get("subject") ?? "").trim(),
+      message: String(fd.get("message") ?? "").trim(),
+    };
+
+    try {
+      const res = await fetch("/api/send-contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json?.error ?? "Failed to send message.");
+      } else {
+        setSubmitted(true);
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-10 pb-8">
@@ -60,7 +97,7 @@ function Contact() {
       <section className="panel p-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-8 reveal">
         <ContactCard icon={<Phone className="size-5" />} title="Call Us" lines={["+1 (604) 401-2800", "Mon – Fri, 9:00 AM – 6:00 PM PST"]} />
         <ContactCard icon={<Mail className="size-5" />} title="Email Us" lines={["info@ardentsoftsol.com", "We reply within 24 hours"]} />
-        <ContactCard icon={<MapPin className="size-5" />} title="Our Location" lines={["15464 96 Ave, Surrey,", "BC V3R1G5, Canada"]} />
+        <ContactCard icon={<MapPin className="size-5" />} title="Our Location" lines={["3665 Kingsway, unit 300,", "Vancouver, BC V5R 5W2, Canada"]} />
         <ContactCard icon={<Calendar className="size-5" />} title="Schedule a Meeting" lines={["Book a free consultation", "with our experts."]} />
       </section>
 
@@ -68,7 +105,7 @@ function Contact() {
         <div>
           <h2 className="font-display-premium text-2xl md:text-3xl underline-accent text-slide-up">Send Us a Message</h2>
           <form
-            onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}
+            onSubmit={handleSubmit}
             className="mt-8 grid sm:grid-cols-2 gap-4"
           >
             <Input label="First Name" />
@@ -79,10 +116,15 @@ function Contact() {
             <Input label="Subject" className="sm:col-span-2" />
             <div className="sm:col-span-2">
               <label htmlFor="message" className="text-sm font-medium font-poppins">How can we help you?</label>
-              <textarea id="message" rows={5} className="mt-2 w-full px-4 py-3 rounded-xl bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary font-inter" />
+              <textarea id="message" name="message" rows={5} className="mt-2 w-full px-4 py-3 rounded-xl bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary font-inter" required />
             </div>
-            <button className="sm:col-span-2 inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-full px-6 py-3.5 font-semibold w-fit hover:opacity-90 transition btn-premium-hover font-poppins">
-              {submitted ? "Message Sent ✓" : <>Send Message <ArrowRight className="size-4" /></>}
+            {error && <p className="sm:col-span-2 text-sm text-destructive font-inter">{error}</p>}
+            <button
+              type="submit"
+              disabled={sending}
+              className="sm:col-span-2 inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-full px-6 py-3.5 font-semibold w-fit hover:opacity-90 transition btn-premium-hover font-poppins disabled:opacity-60"
+            >
+              {submitted ? "Message Sent ✓" : sending ? "Sending…" : <><SendIcon /> Send Message</>}
             </button>
           </form>
         </div>
@@ -92,13 +134,13 @@ function Contact() {
           <div className="mt-8 rounded-2xl overflow-hidden border border-border h-[340px]">
             <iframe
               title="Ardent Softsol Location"
-              src="https://www.google.com/maps?q=15464+96+Ave+Surrey+BC&output=embed"
+              src="https://www.google.com/maps?q=3665+Kingsway+unit+300+Vancouver+BC&output=embed"
               className="w-full h-full"
               loading="lazy"
             />
           </div>
           <div className="mt-4 panel p-5 bg-primary-soft/40">
-            <p className="text-sm font-medium font-poppins">We're located in the heart of Surrey, BC, Canada.</p>
+            <p className="text-sm font-medium font-poppins">We're located in the heart of Vancouver, BC, Canada.</p>
             <p className="text-sm text-muted-foreground mt-1 font-inter">Easy to reach and always ready to meet you!</p>
           </div>
         </div>
@@ -178,7 +220,7 @@ function Input({ label, type = "text", className = "" }: { label: string; type?:
   return (
     <div className={className}>
       <label htmlFor={id} className="text-sm font-medium font-poppins">{label}</label>
-      <input id={id} type={type} className="mt-2 w-full px-4 py-3 rounded-xl bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary font-inter" />
+      <input id={id} name={id} type={type} className="mt-2 w-full px-4 py-3 rounded-xl bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary font-inter" />
     </div>
   );
 }

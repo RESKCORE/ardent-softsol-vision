@@ -8,8 +8,8 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About — Ardent Softsol" },
-      { name: "description", content: "Learn how Ardent Softsol partners with businesses to build scalable, secure, and innovative digital products from our Surrey, BC headquarters." },
-      { name: "keywords", content: "about Ardent Softsol, software company Surrey BC, custom software development firm, software consulting Canada" },
+      { name: "description", content: "Learn how Ardent Softsol partners with businesses to build scalable, secure, and innovative digital products from our Vancouver, BC headquarters." },
+      { name: "keywords", content: "about Ardent Softsol, software company Vancouver BC, custom software development firm, software consulting Canada" },
       { property: "og:title", content: "About Ardent Softsol" },
       { property: "og:description", content: "We innovate code solutions — a client-first software firm building technology that drives real business impact." },
       { property: "og:url", content: "/about" },
@@ -35,8 +35,7 @@ const culturePrinciples = [
 ];
 
 const locations = [
-  "15464 96 Ave, Surrey, BC V3R1G5, Canada",
-  "Unit 1, 10318 Whalley Blvd, Surrey, BC",
+  "3665 Kingsway, unit 300, Vancouver, BC V5R 5W2, Canada",
 ];
 
 function About() {
@@ -158,7 +157,7 @@ function About() {
           <div>
             <h2 className="font-display-premium text-2xl md:text-3xl underline-accent text-slide-up">Our Locations</h2>
             <p className="text-muted-foreground mt-6 leading-relaxed font-inter">
-              We are headquartered in Surrey, British Columbia with a growing presence across North America and global
+              We are headquartered in Vancouver, British Columbia with a growing presence across North America and global
               delivery partnerships.
             </p>
           </div>

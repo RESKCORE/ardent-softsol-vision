@@ -74,6 +74,11 @@ export default {
         return await handleSendResume(request, env);
       }
 
+      // Handle contact form: POST /api/send-contact
+      if (url.pathname === "/api/send-contact" && request.method === "POST") {
+        return await handleSendContact(request, env);
+      }
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
@@ -91,6 +96,87 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
+function resolveEnv(env: unknown, key: string): string | undefined {
+  const envRecord = env as Record<string, string | undefined>;
+  return envRecord?.[key] ?? (typeof process !== "undefined" ? process.env[key] : undefined);
+}
+
+async function sendBrevoEmail(
+  apiKey: string,
+  payload: Record<string, unknown>,
+): Promise<Response> {
+  const resp = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": apiKey,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text();
+    console.error("Sendinblue/Brevo error", resp.status, text);
+  }
+
+  return resp;
+}
+
+async function handleSendContact(request: Request, env: unknown): Promise<Response> {
+  try {
+    const body = await request.json() as Record<string, string | undefined>;
+    const firstName = body.firstName ?? "";
+    const lastName = body.lastName ?? "";
+    const email = body.email ?? "";
+    const phone = body.phone ?? "";
+    const company = body.company ?? "";
+    const subject = body.subject ?? "";
+    const message = body.message ?? "";
+
+    if (!email || !message) {
+      return json({ error: "Email and message are required" }, 400);
+    }
+
+    const apiKey = resolveEnv(env, "SENDINBLUE_API_KEY");
+
+    if (!apiKey) {
+      return json({ error: "Sendinblue API key not configured" }, 500);
+    }
+
+    const textContent = [
+      `New contact form submission from the Ardent Softsol website.`,
+      ``,
+      `Name: ${firstName} ${lastName}`.trim(),
+      `Email: ${email}`,
+      `Phone: ${phone || "Not provided"}`,
+      `Company: ${company || "Not provided"}`,
+      `Subject: ${subject || "Not provided"}`,
+      `Message: ${message}`,
+    ].join("\n");
+
+    const payload = {
+      sender: { name: "SK", email: "notifications@resk.work.gd" },
+      to: [{ email: "santoshkumarreddy.ai@gmail.com", name: "Ardent Softsol" }],
+      replyTo: email ? { email, name: `${firstName} ${lastName}`.trim() || undefined } : undefined,
+      subject: `Contact Form${subject ? `: ${subject}` : ""}${firstName ? ` — ${firstName} ${lastName}`.trim() : ""}`,
+      textContent,
+    };
+
+    const resp = await sendBrevoEmail(apiKey, payload);
+
+    if (!resp.ok) {
+      return json({ error: "Failed to send message. Please try again later." }, 502);
+    }
+
+    return json({ ok: true });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("handleSendContact error:", msg);
+    return json({ error: msg }, 500);
+  }
+}
+
 async function handleSendResume(request: Request, env: unknown): Promise<Response> {
   try {
     const formData = await request.formData();
@@ -104,15 +190,7 @@ async function handleSendResume(request: Request, env: unknown): Promise<Respons
       return json({ error: "No resume uploaded" }, 400);
     }
 
-    // Read env — works on both Node (process.env) and Cloudflare Workers (env binding)
-    const envRecord = env as Record<string, string | undefined>;
-    const apiKey =
-      envRecord?.SENDINBLUE_API_KEY ??
-      (typeof process !== "undefined" ? process.env.SENDINBLUE_API_KEY : undefined);
-    const senderEmail =
-      envRecord?.SENDINBLUE_SENDER_EMAIL ??
-      (typeof process !== "undefined" ? process.env.SENDINBLUE_SENDER_EMAIL : undefined) ??
-      "info@ardentsoftsol.com";
+    const apiKey = resolveEnv(env, "SENDINBLUE_API_KEY");
 
     if (!apiKey) {
       return json({ error: "Sendinblue API key not configured" }, 500);
@@ -139,7 +217,7 @@ async function handleSendResume(request: Request, env: unknown): Promise<Respons
       .join("\n");
 
     const payload = {
-      sender: { name: "Ardent Softsol Website", email: senderEmail },
+      sender: { name: "SK", email: "notifications@resk.work.gd" },
       to: [{ email: "santoshkumarreddy.ai@gmail.com", name: "Ardent Softsol" }],
       replyTo: email ? { email, name: name || undefined } : undefined,
       subject: `Resume Application: ${jobTitle}${name ? ` — ${name}` : ""}`,
@@ -152,19 +230,9 @@ async function handleSendResume(request: Request, env: unknown): Promise<Respons
       ],
     };
 
-    const resp = await fetch("https://api.brevo.com/v3/smtp/email", {
-      method: "POST",
-      headers: {
-        "api-key": apiKey,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    const resp = await sendBrevoEmail(apiKey, payload);
 
     if (!resp.ok) {
-      const text = await resp.text();
-      console.error("Sendinblue/Brevo error", resp.status, text);
       return json({ error: "Failed to send email. Please try again later." }, 502);
     }
 

@@ -49,7 +49,7 @@ export function Footer() {
               </a>
               <div className="flex items-start gap-3">
                 <MapPin className="size-4 text-primary mt-0.5 shrink-0" />
-                <span className="font-inter">15464 96 Ave, Surrey,<br />BC V3R1G5, Canada</span>
+                <span className="font-inter">3665 Kingsway, unit 300,<br />Vancouver, BC V5R 5W2, Canada</span>
               </div>
             </div>
           </div>
