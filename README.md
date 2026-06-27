@@ -16,7 +16,7 @@ Live site: [ardentsoftsol.com](https://ardentsoftsol.com)
 | UI Components | [Radix UI](https://radix-ui.com) primitives |
 | Icons | [Lucide React](https://lucide.dev) |
 | Animations | [Framer Motion](https://framer.motion.com) + CSS IntersectionObserver |
-| Email | [Brevo (Sendinblue)](https://brevo.com) transactional API |
+| Email | Nodemailer (SMTP) — Gmail / Bluehost |
 | Build Tool | [Vite 8](https://vite.dev) |
 | Deployment | Cloudflare Workers / Vercel |
 | Language | TypeScript |
@@ -63,8 +63,10 @@ cp .env.example .env.local
 `.env.local` contents:
 
 ```env
-SENDINBLUE_API_KEY=your-brevo-api-key-here
-SENDINBLUE_SENDER_EMAIL=your-verified-sender@yourdomain.com
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=yourname@gmail.com
+SMTP_PASS=your-16-char-app-password
 ```
 
 > `.env.local` is git-ignored and must never be committed.
@@ -100,7 +102,7 @@ The career page allows applicants to submit their resume directly from the site.
 **How it works:**
 1. Applicant fills in name, email, optional message, and attaches a PDF/DOC/DOCX (max 5 MB)
 2. The form POSTs to the server-side endpoint `/api/send-resume`
-3. The server calls the **Brevo (Sendinblue)** transactional email API
+3. The server sends the email via **Nodemailer (SMTP)**
 4. The resume arrives as an email attachment at `santoshkumarreddy.ai@gmail.com`
 5. The reply-to is set to the applicant's email for easy response
 
@@ -108,8 +110,10 @@ The career page allows applicants to submit their resume directly from the site.
 
 | Variable | Description |
 |---|---|
-| `SENDINBLUE_API_KEY` | API key from [app.brevo.com](https://app.brevo.com/settings/keys/api) |
-| `SENDINBLUE_SENDER_EMAIL` | A verified sender email in your Brevo account |
+| `SMTP_HOST` | SMTP server hostname (e.g. `smtp.gmail.com`) |
+| `SMTP_PORT` | SMTP server port (e.g. `587` for TLS, `465` for SSL) |
+| `SMTP_USER` | SMTP username (e.g. full Gmail address) |
+| `SMTP_PASS` | SMTP password or App Password |
 
 ---
 
@@ -160,8 +164,10 @@ Vercel auto-detects TanStack Start. No adapter needed.
 1. Push to GitHub
 2. Import the repo in [vercel.com](https://vercel.com)
 3. Add environment variables in **Project Settings → Environment Variables**:
-   - `SENDINBLUE_API_KEY`
-   - `SENDINBLUE_SENDER_EMAIL`
+   - `SMTP_HOST`
+   - `SMTP_PORT`
+   - `SMTP_USER`
+   - `SMTP_PASS`
 4. Deploy — Vercel handles the rest
 
 Build settings (auto-detected, but if needed):
@@ -176,8 +182,10 @@ Build settings (auto-detected, but if needed):
 npx wrangler login
 
 # Set secrets
-npx wrangler secret put SENDINBLUE_API_KEY
-npx wrangler secret put SENDINBLUE_SENDER_EMAIL
+npx wrangler secret put SMTP_HOST
+npx wrangler secret put SMTP_PORT
+npx wrangler secret put SMTP_USER
+npx wrangler secret put SMTP_PASS
 
 # Deploy
 npm run build
@@ -189,9 +197,11 @@ npx wrangler deploy
 ## Environment Variables Reference
 
 | Variable | Required | Used in | Description |
-|---|---|---|---|
-| `SENDINBLUE_API_KEY` | Yes | `src/server.ts` | Brevo API key for sending emails |
-| `SENDINBLUE_SENDER_EMAIL` | Yes | `src/server.ts` | Verified sender address in Brevo |
+|---|---|---|---|---|
+| `SMTP_HOST` | Yes | `src/server.ts` | SMTP server hostname |
+| `SMTP_PORT` | Yes | `src/server.ts` | SMTP server port |
+| `SMTP_USER` | Yes | `src/server.ts` | SMTP username |
+| `SMTP_PASS` | Yes | `src/server.ts` | SMTP password or App Password |
 
 ---
 

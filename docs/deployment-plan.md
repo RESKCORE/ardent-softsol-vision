@@ -12,7 +12,7 @@ This project is a **TanStack Start** (React 19) application with **Vite 8** as t
 
 - Node.js >= 24.15.0 (see `.nvmrc`)
 - A [Vercel](https://vercel.com) account
-- A [Brevo (Sendinblue)](https://www.brevo.com) account for email
+- SMTP credentials (Gmail App Password for testing, Bluehost SMTP for production)
 
 ### Steps
 
@@ -39,9 +39,11 @@ Or connect via the Vercel dashboard:
 In the Vercel dashboard (**Project Settings → Environment Variables**), add:
 
 | Variable | Value |
-|---|---|
-| `SENDINBLUE_API_KEY` | Your Brevo API key |
-| `SENDINBLUE_SENDER_EMAIL` | Verified sender email in your Brevo account |
+|---|---|---|
+| `SMTP_HOST` | SMTP server hostname (e.g. `smtp.gmail.com`) |
+| `SMTP_PORT` | SMTP server port (e.g. `587`) |
+| `SMTP_USER` | SMTP username |
+| `SMTP_PASS` | SMTP password or App Password |
 
 #### 1.3 Deploy
 
@@ -128,51 +130,29 @@ dist/
 #### How it works
 
 1. Career page (`career.tsx`) submits the form as `multipart/form-data` to `/api/send-resume`
-2. `src/server.ts` parses the form data, reads env vars (`SENDINBLUE_API_KEY`, `SENDINBLUE_SENDER_EMAIL`)
+2. `src/server.ts` parses the form data, reads SMTP env vars
 3. Converts the resume file to base64
-4. Sends a **Brevo transactional email** via their REST API with the resume attached
+4. Sends the email via **Nodemailer (SMTP)** with the resume attached
 5. email is delivered to `santoshkumarreddy.ai@gmail.com`
 
-### 2.2 External API — Brevo (Sendinblue) Transactional Email
+### 2.2 Email delivery — Nodemailer (SMTP)
 
 | Property | Value |
 |---|---|
-| **Endpoint** | `POST https://api.brevo.com/v3/smtp/email` |
-| **Source** | `src/server.ts:155-163` |
-| **Auth** | API key in `api-key` header |
+| **Method** | `nodemailer.createTransport()` + `sendMail()` |
+| **Source** | `src/server.ts` |
+| **Auth** | SMTP user/pass |
 
-#### Request payload
-
-```json
-{
-  "sender": {
-    "name": "Ardent Softsol Website",
-    "email": "<SENDINBLUE_SENDER_EMAIL>"
-  },
-  "to": [
-    { "email": "santoshkumarreddy.ai@gmail.com", "name": "Ardent Softsol" }
-  ],
-  "replyTo": {
-    "email": "<applicant-email>",
-    "name": "<applicant-name>"
-  },
-  "subject": "Resume Application: <jobTitle> — <name>",
-  "textContent": "New resume submission...",
-  "attachment": [
-    {
-      "content": "<base64-encoded-file>",
-      "name": "resume.pdf"
-    }
-  ]
-}
-```
+Email is sent via the configured SMTP server using nodemailer instead of a third-party transactional API.
 
 #### Environment variables required
 
 | Variable | Purpose |
 |---|---|
-| `SENDINBLUE_API_KEY` | Brevo API key for authentication |
-| `SENDINBLUE_SENDER_EMAIL` | Verified sender email in Brevo account |
+| `SMTP_HOST` | SMTP server hostname |
+| `SMTP_PORT` | SMTP server port |
+| `SMTP_USER` | SMTP username |
+| `SMTP_PASS` | SMTP password or App Password |
 
 ### 2.3 External resources (non-API)
 
@@ -216,9 +196,11 @@ npm install
 # Copy environment file
 cp .env.example .env.local
 
-# Fill in your Brevo API key and sender email in .env.local
-# SENDINBLUE_API_KEY=your-key
-# SENDINBLUE_SENDER_EMAIL=your-email
+# Fill in your SMTP credentials in .env.local
+# SMTP_HOST=smtp.gmail.com
+# SMTP_PORT=587
+# SMTP_USER=yourname@gmail.com
+# SMTP_PASS=your-16-char-app-password
 
 # Start dev server (loads .env.local automatically)
 npm run dev
@@ -236,5 +218,7 @@ npm run preview
 
 | Variable | Required | Where set (Vercel) | Where set (local) | Consumed in |
 |---|---|---|---|---|
-| `SENDINBLUE_API_KEY` | Yes | Vercel Dashboard → Environment Variables | `.env.local` | `src/server.ts:109-111` |
-| `SENDINBLUE_SENDER_EMAIL` | No (falls back to `info@ardentsoftsol.com`) | Vercel Dashboard → Environment Variables | `.env.local` | `src/server.ts:112-115` |
+| `SMTP_HOST` | Yes | Vercel Dashboard → Environment Variables | `.env.local` | `src/server.ts` |
+| `SMTP_PORT` | Yes | Vercel Dashboard → Environment Variables | `.env.local` | `src/server.ts` |
+| `SMTP_USER` | Yes | Vercel Dashboard → Environment Variables | `.env.local` | `src/server.ts` |
+| `SMTP_PASS` | Yes | Vercel Dashboard → Environment Variables | `.env.local` | `src/server.ts` |

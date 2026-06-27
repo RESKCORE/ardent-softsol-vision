@@ -2,6 +2,7 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import nodemailer from "nodemailer";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -101,26 +102,24 @@ function resolveEnv(env: unknown, key: string): string | undefined {
   return envRecord?.[key] ?? (typeof process !== "undefined" ? process.env[key] : undefined);
 }
 
-async function sendBrevoEmail(
-  apiKey: string,
-  payload: Record<string, unknown>,
-): Promise<Response> {
-  const resp = await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: {
-      "api-key": apiKey,
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+function createTransporter(env: unknown) {
+  const host = resolveEnv(env, "SMTP_HOST");
+  const portStr = resolveEnv(env, "SMTP_PORT");
+  const user = resolveEnv(env, "SMTP_USER");
+  const pass = resolveEnv(env, "SMTP_PASS");
 
-  if (!resp.ok) {
-    const text = await resp.text();
-    console.error("Sendinblue/Brevo error", resp.status, text);
+  if (!host || !portStr || !user || !pass) {
+    return null;
   }
 
-  return resp;
+  const port = Number(portStr);
+
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    auth: { user, pass },
+  });
 }
 
 async function handleSendContact(request: Request, env: unknown): Promise<Response> {
@@ -138,10 +137,10 @@ async function handleSendContact(request: Request, env: unknown): Promise<Respon
       return json({ error: "Email and message are required" }, 400);
     }
 
-    const apiKey = resolveEnv(env, "SENDINBLUE_API_KEY");
+    const transporter = createTransporter(env);
 
-    if (!apiKey) {
-      return json({ error: "Sendinblue API key not configured" }, 500);
+    if (!transporter) {
+      return json({ error: "SMTP not configured" }, 500);
     }
 
     const textContent = [
@@ -155,19 +154,17 @@ async function handleSendContact(request: Request, env: unknown): Promise<Respon
       `Message: ${message}`,
     ].join("\n");
 
-    const payload = {
-      sender: { name: "SK", email: "notifications@resk.work.gd" },
-      to: [{ email: "santoshkumarreddy.ai@gmail.com", name: "Ardent Softsol" }],
-      replyTo: email ? { email, name: `${firstName} ${lastName}`.trim() || undefined } : undefined,
-      subject: `Contact Form${subject ? `: ${subject}` : ""}${firstName ? ` — ${firstName} ${lastName}`.trim() : ""}`,
-      textContent,
-    };
+    const user = resolveEnv(env, "SMTP_USER")!;
+    const fromAddr = resolveEnv(env, "SMTP_FROM") || `"SK" <${user}>`;
+    const senderName = `${firstName} ${lastName}`.trim();
 
-    const resp = await sendBrevoEmail(apiKey, payload);
-
-    if (!resp.ok) {
-      return json({ error: "Failed to send message. Please try again later." }, 502);
-    }
+    await transporter.sendMail({
+      from: fromAddr,
+      to: "santoshkumarreddy.ai@gmail.com",
+      replyTo: email ? `"${senderName}" <${email}>` : undefined,
+      subject: `Contact Form${subject ? `: ${subject}` : ""}${firstName ? ` — ${senderName}` : ""}`,
+      text: textContent,
+    });
 
     return json({ ok: true });
   } catch (err: unknown) {
@@ -190,10 +187,10 @@ async function handleSendResume(request: Request, env: unknown): Promise<Respons
       return json({ error: "No resume uploaded" }, 400);
     }
 
-    const apiKey = resolveEnv(env, "SENDINBLUE_API_KEY");
+    const transporter = createTransporter(env);
 
-    if (!apiKey) {
-      return json({ error: "Sendinblue API key not configured" }, 500);
+    if (!transporter) {
+      return json({ error: "SMTP not configured" }, 500);
     }
 
     // Convert file to base64 for the attachment
@@ -216,25 +213,23 @@ async function handleSendResume(request: Request, env: unknown): Promise<Respons
       .filter(Boolean)
       .join("\n");
 
-    const payload = {
-      sender: { name: "SK", email: "notifications@resk.work.gd" },
-      to: [{ email: "santoshkumarreddy.ai@gmail.com", name: "Ardent Softsol" }],
-      replyTo: email ? { email, name: name || undefined } : undefined,
+    const user = resolveEnv(env, "SMTP_USER")!;
+    const fromAddr = resolveEnv(env, "SMTP_FROM") || `"SK" <${user}>`;
+
+    await transporter.sendMail({
+      from: fromAddr,
+      to: "santoshkumarreddy.ai@gmail.com",
+      replyTo: email ? `"${name || "Applicant"}" <${email}>` : undefined,
       subject: `Resume Application: ${jobTitle}${name ? ` — ${name}` : ""}`,
-      textContent: bodyText,
-      attachment: [
+      text: bodyText,
+      attachments: [
         {
+          filename: resume.name || "resume.pdf",
           content: base64Content,
-          name: resume.name || "resume.pdf",
+          encoding: "base64",
         },
       ],
-    };
-
-    const resp = await sendBrevoEmail(apiKey, payload);
-
-    if (!resp.ok) {
-      return json({ error: "Failed to send email. Please try again later." }, 502);
-    }
+    });
 
     return json({ ok: true });
   } catch (err: unknown) {
